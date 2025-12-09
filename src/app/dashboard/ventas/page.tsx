@@ -267,7 +267,7 @@ export default function VentasPage() {
 
                     <div className="space-y-4">
                         <div>
-                        <Label>Seleccionar Cliente *</Label>
+                        <Label className="mb-4 block">Seleccionar Cliente *</Label>
                         <Select value={selectedUserId} onValueChange={setSelectedUserId}>
                             <SelectTrigger>
                             <SelectValue placeholder="Selecciona un cliente" />
