@@ -1,4 +1,4 @@
-// app/dashboard/layout.tsx
+// src/app/dashboard/layout.tsx
 'use client';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -8,20 +8,24 @@ import Navbar from '@/components/layout/Navbar';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, isLoading } = useAuth(); // Asegúrate de que useAuth devuelva isLoading si lo tienes
 
     useEffect(() => {
-        if (!localStorage.getItem('token')) {
-        router.push('/login');
+        if (!isLoading && !localStorage.getItem('token')) {
+            router.replace('/login');
         }
-    }, [isAuthenticated, router]);
+    }, [isLoading, router]);
 
-    if (!isAuthenticated) {
-        return <div className="flex items-center justify-center h-screen">Cargando...</div>;
+    if (isLoading || !isAuthenticated) {
+        return (
+            <div className="flex items-center justify-center h-screen bg-background">
+                <p className="text-lg text-muted-foreground">Verificando autenticación...</p>
+            </div>
+        );
     }
 
     return (
-        <div className="flex bg-background min-h-screen"> {/* ✅ CORREGIDO */}
+        <div className="flex bg-background min-h-screen">
             <Sidebar />
             <div className="flex-1 ml-64">
                 <Navbar />
