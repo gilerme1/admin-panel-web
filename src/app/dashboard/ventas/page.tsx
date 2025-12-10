@@ -119,7 +119,11 @@ export default function VentasPage() {
     });
 
     return (
-        <div className="space-y-6 pt-6 px-28">
+        // **********************************************
+        // 1. CONTENEDOR RAIZ (Aplicación de Responsividad)
+        // **********************************************
+        <div className="space-y-6 pt-6 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 max-w-screen-xl mx-auto">
+            
             {/* Encabezado y Botón Nuevo Pedido */}
             <div className="flex items-center justify-between">
                 <div>
@@ -139,10 +143,12 @@ export default function VentasPage() {
                     <h2 className="text-xl font-semibold text-foreground">Listado de Ventas</h2>
                 </div>
 
-                {/* 2. CONTENEDOR DE LA BARRA DE ACCIÓN (BUSCADOR/FILTROS) */}
-                <div className="px-6 py-4 flex items-center justify-between gap-4 border-b border-border">
-                    {/* Buscador */}
-                    <div className="relative flex-1 max-w-sm">
+                {/* ********************************************** */}
+                {/* 2. CONTENEDOR DE LA BARRA DE ACCIÓN (RESPONSIVO) */}
+                {/* ********************************************** */}
+                <div className="px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border">
+                    {/* Buscador: max-w-full en móvil, max-w-sm en sm+ */}
+                    <div className="relative flex-1 max-w-full sm:max-w-sm">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                         <Input
                             placeholder="Buscar por nombre o ID de orden..."
@@ -151,103 +157,111 @@ export default function VentasPage() {
                             className="pl-10"
                         />
                     </div>
-                    {/* Botones de Acción */}
-                    <div className="flex gap-2">
+                    {/* Botones de Acción: Ocupa todo el ancho en móvil, auto en sm+ */}
+                    <div className="flex gap-2 w-full sm:w-auto">
                         <Button 
                             variant="outline" 
                             onClick={() => toggleSort('createdAt')}
-                            className="flex items-center gap-1"
+                            className="flex items-center gap-1 w-1/2 sm:w-auto" // w-1/2 para ocupar espacio en móvil
                         >
                             <ArrowDownUp size={18} />
                             Ordenar
                         </Button>
-                        <Button variant="outline" className="flex items-center gap-1">
+                        <Button 
+                            variant="outline" 
+                            className="flex items-center gap-1 w-1/2 sm:w-auto" // w-1/2 para ocupar espacio en móvil
+                        >
                             <Filter size={18} />
                             Filtros
                         </Button>
                     </div>
                 </div>
                 
-                {/* 3. TABLA DE VENTAS (Asegura el scroll si es necesario) */}
+                {/* 3. TABLA DE VENTAS (Asegura el scroll) */}
                 <div className="overflow-x-auto">
-                    <Table>
+                    {/* Se elimina inline-block y ring-1, igual que en categorías */}
+                    <Table className="min-w-[700px] lg:min-w-full">
                         <TableHeader>
                             <TableRow>
-                                {/* Cliente */}
-                                <TableHead 
-                                    className="cursor-pointer hover:bg-accent/50 transition" 
-                                    onClick={() => toggleSort('nombre')}
-                                >
+                                <TableHead className="px-3 py-3 sm:px-4 lg:px-6 cursor-pointer hover:bg-accent/50 transition" onClick={() => toggleSort('nombre')}>
                                     Cliente
                                 </TableHead>
-                                
-                                {/* Número de Orden/Fecha */}
-                                <TableHead 
-                                    className="cursor-pointer hover:bg-accent/50 transition"
-                                    onClick={() => toggleSort('createdAt')}
-                                >
+                                <TableHead className="px-3 py-3 sm:px-4 lg:px-6 cursor-pointer hover:bg-accent/50 transition" onClick={() => toggleSort('createdAt')}>
                                     Número de Orden
                                 </TableHead>
-                                
-                                <TableHead>Estado</TableHead>
-                                <TableHead 
-                                    className="cursor-pointer hover:bg-accent/50 transition"
-                                    onClick={() => toggleSort('total')}
-                                >
+                                {/* Estado - oculto en móvil */}
+                                <TableHead className="px-3 py-3 sm:px-4 lg:px-6 hidden sm:table-cell">
+                                    Estado
+                                </TableHead>
+                                <TableHead className="px-3 py-3 sm:px-4 lg:px-6 cursor-pointer hover:bg-accent/50 transition" onClick={() => toggleSort('total')}>
                                     Total
                                 </TableHead>
-                                
-                                <TableHead>Pago</TableHead>
-                                
-                                {/* Acciones */}
-                                <TableHead className="text-right">Acciones</TableHead>
+                                {/* Pago - oculto en tablet y móvil */}
+                                <TableHead className="px-3 py-3 sm:px-4 lg:px-6 hidden md:table-cell">
+                                    Pago
+                                </TableHead>
+                                <TableHead className="px-3 py-3 sm:px-4 lg:px-6 text-right">
+                                    Acciones
+                                </TableHead>
                             </TableRow>
                         </TableHeader>
-                        
                         <TableBody>
                             {filteredAndSortedOrders.map((order) => (
                                 <TableRow key={order.id}>
-                                    {/* Celda Cliente */}
-                                    <TableCell>
+                                    <TableCell className="px-3 py-2 sm:px-4 lg:px-6">
                                         <div>
-                                            <p className="font-medium">{order.user.nombre}</p>
-                                            <p className="text-sm text-muted-foreground">{order.user.email}</p>
+                                            <p className="font-medium text-sm">{order.user.nombre}</p>
+                                            <p className="text-xs text-muted-foreground truncate max-w-[150px] sm:max-w-[200px]">
+                                                {order.user.email}
+                                            </p>
                                         </div>
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell className="px-3 py-2 sm:px-4 lg:px-6">
                                         <div>
-                                            <p className="font-mono text-sm">{order.id.slice(0, 8).toUpperCase()}</p>
+                                            <p className="font-mono text-xs sm:text-sm">
+                                                {order.id.slice(0, 8).toUpperCase()}
+                                            </p>
                                             <p className="text-xs text-muted-foreground">
                                                 {new Date(order.createdAt).toLocaleDateString('es-MX')}
                                             </p>
                                         </div>
                                     </TableCell>
-                                    <TableCell>
-                                        <span className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded text-sm">
-                                            Enviado 
+                                    {/* Estado - oculto en móvil */}
+                                    <TableCell className="px-3 py-2 sm:px-4 lg:px-6 text-muted-foreground hidden sm:table-cell">
+                                        <span className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded text-xs sm:text-sm whitespace-nowrap">
+                                            Enviado
                                         </span>
                                     </TableCell>
-                                    <TableCell className="font-semibold">
-                                        ${order.total.toFixed(2)}
-                                        <p className="text-xs text-muted-foreground mt-1">Tarjeta</p>
+                                    <TableCell className="px-3 py-2 sm:px-4 lg:px-6">
+                                        <p className="font-semibold text-sm">
+                                            ${order.total.toFixed(2)}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground mt-1 hidden sm:block">
+                                            Tarjeta
+                                        </p>
                                     </TableCell>
-                                    
-                                    <TableCell>
-                                        <div className="flex flex-col"> 
-                                            <span className="px-2 py-1 bg-primary text-primary-foreground rounded text-xs w-fit">
-                                                Pagado
-                                            </span>
-                                        </div>
+                                    {/* Pago - APLICACIÓN DEL COLOR VERDE - oculto en tablet y móvil */}
+                                    <TableCell className="px-3 py-2 sm:px-4 lg:px-6 hidden md:table-cell">
+                                        <span className="px-2 py-1 bg-primary text-primary-foreground rounded text-xs w-fit">
+                                            Pagado
+                                        </span>
                                     </TableCell>
-                                    
-                                    {/* Celda Acciones */}
-                                    <TableCell className="text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <Button variant="ghost" size="icon" onClick={() => handleViewDetail(order)}>
-                                                <Eye size={18} />
+                                    <TableCell className="px-3 py-2 sm:px-4 lg:px-6 text-right">
+                                        <div className="flex justify-end gap-1 sm:gap-2">
+                                            <Button 
+                                                variant="ghost" 
+                                                size="icon"
+                                                className="h-8 w-8 sm:h-10 sm:w-10"
+                                                onClick={() => handleViewDetail(order)}
+                                            >
+                                                <Eye size={16} className="sm:w-[18px] sm:h-[18px]" />
                                             </Button>
-                                            <Button variant="ghost" size="icon">
-                                                <Edit size={18} />
+                                            <Button 
+                                                variant="ghost" 
+                                                size="icon"
+                                                className="h-8 w-8 sm:h-10 sm:w-10 hidden sm:flex"
+                                            >
+                                                <Edit size={16} className="sm:w-[18px] sm:h-[18px]" />
                                             </Button>
                                         </div>
                                     </TableCell>
@@ -364,7 +378,7 @@ export default function VentasPage() {
                 </DialogContent>
             </Dialog>
 
-            {/* Modal Ver Detalle (Corregido cierre de JSX) */}
+            {/* Modal Ver Detalle */}
             <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
                 <DialogContent className="max-w-2xl">
                     <DialogHeader>
@@ -378,7 +392,8 @@ export default function VentasPage() {
                             <p className="text-sm text-muted-foreground">Orden #{selectedOrder.id.slice(0, 8)}</p>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        {/* HACER ESTO RESPONSIVO: grid-cols-1 en móvil, grid-cols-2 en sm+ */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="border border-border rounded-lg p-4">
                             <h3 className="font-semibold mb-2">Información del Cliente</h3>
                             <p className="text-sm"><strong>Nombre:</strong> {selectedOrder.user.nombre}</p>
@@ -389,7 +404,8 @@ export default function VentasPage() {
                             <div className="border border-border rounded-lg p-4">
                             <h3 className="font-semibold mb-2">Información de Pago</h3>
                             <p className="text-sm"><strong>Método:</strong> Tarjeta de Crédito</p>
-                            <p className="text-sm"><strong>Estado:</strong> Pagado</p>
+                            {/* CAMBIADO ESTADO DE PAGO A VERDE */}
+                            <p className="text-sm"><strong>Estado:</strong> <span className="px-2 py-1 bg-primary text-primary-foreground rounded text-xs w-fit">Pagado</span></p> 
                             <p className="text-sm"><strong>Total:</strong> ${selectedOrder.total.toFixed(2)}</p>
                             </div>
                         </div>
@@ -406,7 +422,7 @@ export default function VentasPage() {
                             </div>
                         </div>
                         </div>
-                    )} {/* Cierre del bloque selectedOrder && (...) */}
+                    )}
                 </DialogContent>
             </Dialog>
         </div>

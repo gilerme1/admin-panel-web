@@ -1,26 +1,30 @@
 // components/layout/Navbar.tsx
 'use client';
 
-import { Bell, Sun, Moon, LogOut } from 'lucide-react';
+import { Bell, Sun, Moon, LogOut, Menu } from 'lucide-react'; // ⬅️ Se agrega Menu
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-// Importación correcta del hook de tema
 import { useTheme } from '@/app/providers'; 
 
+// ⬅️ Se define la nueva prop
+interface NavbarProps {
+    onOpenSidebar: () => void;
+}
 
-export default function Navbar() {
+// ⬅️ Se recibe la nueva prop
+export default function Navbar({ onOpenSidebar }: NavbarProps) { 
     const { user, logout } = useAuth();
     const { theme, toggleTheme } = useTheme(); 
     const pathname = usePathname();
 
-    // Generar breadcrumb dinámico (MANTENIDO SIN CAMBIOS)
+    // ... (generateBreadcrumb se mantiene igual)
+
     const generateBreadcrumb = () => {
         const segments = pathname.split('/').filter(Boolean);
 
-        // Si estamos en dashboard raíz
         if (segments.length === 1 && segments[0] === 'dashboard') {
         return [{ label: 'Inicio', href: '/dashboard' }];
         }
@@ -36,7 +40,6 @@ export default function Navbar() {
 
         let label = segment.charAt(0).toUpperCase() + segment.slice(1);
 
-        // Traducciones y casos especiales
         const translations: Record<string, string> = {
             productos: 'Productos',
             ventas: 'Ventas',
@@ -61,37 +64,47 @@ export default function Navbar() {
     const breadcrumbs = generateBreadcrumb();
 
     return (
-        // ✅ CORRECCIÓN 1: Fondo y borde adaptables
-        <header className="h-16 bg-background border-b border-border fixed top-0 right-0 left-64 z-50">
+        // ✅ Ajuste: 'left-64' se reemplaza por 'lg:left-64' para que en móvil sea 'left-0'
+        <header className="h-16 bg-background border-b border-border fixed top-0 right-0 left-0 lg:left-64 z-50"> 
         <div className="h-full px-6 flex items-center justify-between">
 
-            {/* Breadcrumb */}
-            <nav className="flex items-center">
-            <ol className="flex items-center gap-2">
-                {breadcrumbs.map((crumb, index) => (
-                <li key={crumb.href} className="flex items-center gap-2">
-                    {/* ✅ CORRECCIÓN 2: Separador adaptable */}
-                    {index > 0 && <span className="text-muted-foreground">/</span>} 
-                    {index === breadcrumbs.length - 1 ? (
-                    <span 
-                        // ✅ CORRECCIÓN 3: Texto activo (página actual)
-                        className="text-lg font-bold text-foreground"
-                    >
-                        {crumb.label}
-                    </span>
-                    ) : (
-                    <Link
-                        href={crumb.href}
-                        // ✅ CORRECCIÓN 4: Texto inactivo (link)
-                        className="text-lg font-semibold text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                        {crumb.label}
-                    </Link>
-                    )}
-                </li>
-                ))}
-            </ol>
-            </nav>
+            {/* ⬅️ NUEVO: Botón para abrir el Sidebar en móvil */}
+            <div className='flex items-center gap-4'>
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className='lg:hidden'
+                    onClick={onOpenSidebar} // ⬅️ Llama a la función del layout
+                >
+                    <Menu className="h-5 w-5" />
+                </Button>
+
+                {/* Breadcrumb */}
+                <nav className="flex items-center">
+                    <ol className="flex items-center gap-2">
+                        {breadcrumbs.map((crumb, index) => (
+                        <li key={crumb.href} className="flex items-center gap-2">
+                            {index > 0 && <span className="text-muted-foreground">/</span>} 
+                            {index === breadcrumbs.length - 1 ? (
+                            <span 
+                                className="text-lg font-bold text-foreground"
+                            >
+                                {crumb.label}
+                            </span>
+                            ) : (
+                            <Link
+                                href={crumb.href}
+                                className="text-lg font-semibold text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                                {crumb.label}
+                            </Link>
+                            )}
+                        </li>
+                        ))}
+                    </ol>
+                </nav>
+            </div>
+
 
             {/* Acciones derecha */}
             <div className="flex items-center gap-4">
@@ -107,7 +120,6 @@ export default function Navbar() {
 
             <div className="flex items-center gap-3">
                 <Avatar className="h-9 w-9">
-                {/* ✅ CORRECCIÓN 5: Color de fondo adaptable para Avatar */}
                 <AvatarFallback className="bg-primary text-primary-foreground text-sm font-medium">
                     {user?.nombre?.[0]?.toUpperCase() || 'U'}
                 </AvatarFallback>

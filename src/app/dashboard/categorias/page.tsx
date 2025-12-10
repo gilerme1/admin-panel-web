@@ -65,11 +65,11 @@ export default function CategoriasPage() {
     if (isLoading) return <div>Cargando...</div>;
 
     return (
-        <div className="space-y-6 pt-6 px-28">
+        // ⚠️ MEJORA 1: Padding lateral responsivo (px-4 para móvil, subiendo hasta px-28 en desktop)
+        <div className="space-y-6 pt-6 px-4 sm:px-8 md:px-12 lg:px-28">
             {/* 1. Encabezado y Botón Nueva Categoría */}
             <div className="flex items-center justify-between">
                 <div>
-                    {/* Se cambió text-gray-900 por text-foreground */}
                     <h1 className="text-3xl font-bold text-foreground">Categorías</h1>
                 </div>
                 <Button
@@ -81,18 +81,17 @@ export default function CategoriasPage() {
                 className="bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
                 <Plus size={20} className="mr-2" />
-                Nueva Categoría
+                <span className="hidden sm:inline">Nueva Categoría</span>
+                <span className="sm:hidden">Nueva</span>
                 </Button>
             </div>
 
-            {/* 2. CONTENEDOR PRINCIPAL DE LISTADO: Se cambió bg-white por bg-card y se agregó el borde */}
+            {/* 2. CONTENEDOR PRINCIPAL DE LISTADO */}
             <div className="bg-card rounded-lg shadow border border-border">
                 
                 {/* 2.1. CONTENEDOR DE LA BARRA DE ACCIÓN (BUSCADOR) */}
-                {/* Se cambió el padding vertical para encajar con el diseño anterior y se añade borde inferior */}
                 <div className="px-6 py-4 border-b border-border">
                     <div className="relative max-w-sm">
-                        {/* Se cambió text-gray-400 por text-muted-foreground */}
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                         <Input
                         placeholder="Buscar por nombre..."
@@ -103,30 +102,29 @@ export default function CategoriasPage() {
                     </div>
                 </div>
 
-                {/* 2.2. CONTENEDOR DE LA TABLA DE CATEGORÍAS (CORREGIDO) */}
-                {/* ⚠️ Ajuste principal: Se ELIMINA el div extra que tenía border/mx/px/bg-white. */}
-                {/* El fondo 'bg-card' y el borde 'border border-border' ya están en el contenedor padre. */}
+                {/* 2.2. CONTENEDOR DE LA TABLA DE CATEGORÍAS */}
                 <div className="overflow-x-auto"> 
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                {/* Quitamos los padding laterales si existían en TH */}
                                 <TableHead>Posición</TableHead>
                                 <TableHead>Nombre</TableHead>
-                                <TableHead>Subcategorías</TableHead>
-                                <TableHead>Categoría Padre</TableHead>
+                                {/* ⚠️ MEJORA 2: Ocultar columnas menos importantes en móvil (md:table-cell) */}
+                                <TableHead className="hidden md:table-cell">Subcategorías</TableHead>
+                                <TableHead className="hidden md:table-cell">Categoría Padre</TableHead>
                                 <TableHead className="text-right">Acciones</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {filteredCategories.map((category, index) => (
                             <TableRow key={category.id}>
-                                {/* Quitamos los padding laterales si existían en TD */}
                                 <TableCell>{index}</TableCell>
                                 <TableCell className="font-medium">{category.nombre}</TableCell>
-                                {/* Se cambió text-gray-600 por text-muted-foreground */}
-                                <TableCell className="text-muted-foreground">{category._count?.products || 0} subcategorías</TableCell>
-                                <TableCell>
+                                {/* ⚠️ MEJORA 2: Ocultar celdas de datos correspondientes en móvil */}
+                                <TableCell className="text-muted-foreground hidden md:table-cell">
+                                    {category._count?.products || 0} subcategorías
+                                </TableCell>
+                                <TableCell className="hidden md:table-cell">
                                 <span className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded text-xs">
                                     Principal
                                 </span>
@@ -140,7 +138,6 @@ export default function CategoriasPage() {
                                         <Edit size={18} />
                                     </Button>
                                     <Button variant="ghost" size="icon" onClick={() => handleDelete(category.id)}>
-                                        {/* Se asegura el color rojo en Dark Mode */}
                                         <Trash2 size={18} className="text-red-600 dark:text-red-400" /> 
                                     </Button>
                                 </div>
@@ -154,21 +151,17 @@ export default function CategoriasPage() {
 
             {/* Modal Crear/Editar Categoría */}
             <Dialog open={open} onOpenChange={setOpen}>
-            {/* 1. TAMAÑO DEL MODAL: sm:max-w-lg para ensancharlo */}
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
-                    {/* Agrandar fuente del título */}
                     <DialogTitle className="text-2xl font-bold">
                         {editingCategory ? 'Editar' : 'Nueva'} Categoría
                     </DialogTitle>
                 </DialogHeader>
                 
-                {/* ESPACIO: space-y-5 para más separación vertical entre bloques */}
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                     
                     {/* CAMPO 1: NOMBRE */}
                     <div>
-                        {/* Se usa el componente Label para compatibilidad con el tema */}
                         <label htmlFor="nombre" className="text-base font-semibold block mb-1">Nombre</label>
                         <Input
                             id="nombre"
@@ -206,7 +199,6 @@ export default function CategoriasPage() {
                     <DialogFooter className="pt-4">
                         <Button 
                             type="submit" 
-                            // Se cambió bg-gray-900/hover por bg-primary/hover
                             className="bg-primary hover:bg-primary/90 text-primary-foreground"
                         >
                             {editingCategory ? 'Guardar' : 'Crear'}

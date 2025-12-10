@@ -26,9 +26,9 @@ type ProductForm = {
     stock?: number;
     estado?: EstadoProducto;
     categoryId: string;
-    };
+};
 
-    export default function ProductosPage() {
+export default function ProductosPage() {
     const { products, isLoading, createProduct, updateProduct, deleteProduct } = useProducts();
     const { categories } = useCategories();
     const [open, setOpen] = useState(false);
@@ -86,15 +86,20 @@ type ProductForm = {
     if (isLoading) return <div>Cargando...</div>;
 
     return (
-        <div className="space-y-6 pt-6 px-28">
+        // **********************************************
+        // 1. CONTENEDOR RAIZ (Aplicación de Responsividad)
+        // Se aplica padding dinámico y ancho máximo.
+        // **********************************************
+        <div className="space-y-6 pt-6 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 max-w-screen-xl mx-auto">
+            
             {/* 1. Encabezado y Botones de Acción */}
             <div className="flex items-center justify-between">
                 <div>
-                    {/* Clase corregida para Dark Mode */}
                     <h1 className="text-3xl font-bold text-foreground">Productos</h1> 
                 </div>
-                <div className="flex gap-2">
-                    <Button variant="outline">
+                {/* Contenedor de botones: Se hace el botón 'Importar' oculto en móvil */}
+                <div className="flex gap-2"> 
+                    <Button variant="outline" className="hidden sm:inline-flex">
                         Importar Productos
                     </Button>
                     <Button
@@ -106,33 +111,42 @@ type ProductForm = {
                         className="bg-primary hover:bg-primary/90 text-primary-foreground"
                     >
                         <Plus size={20} className="mr-2" />
-                        Nuevo Producto
+                        <span className="hidden sm:inline">Nuevo Producto</span>
+                        <span className="sm:hidden">Nuevo</span>
                     </Button>
                 </div>
             </div>
 
             {/* 2. CONTENEDOR PRINCIPAL DEL LISTADO */}
-            {/* Se cambió bg-white por bg-card y se agregó el borde y el shadow */}
             <div className="bg-card rounded-lg shadow border border-border"> 
                 
-                {/* 2.1. BARRA DE ACCIÓN (Búsqueda/Filtros) */}
-                {/* Se eliminó el div con mx/border/shadow innecesarios y se ajusta el padding y borde inferior */}
-                <div className="p-6 py-3 flex gap-4 border-b border-border">
-                    <div className="relative flex-1 max-w-sm">
-                        {/* Clase corregida para Dark Mode */}
+                {/* ********************************************** */}
+                {/* 2.1. BARRA DE ACCIÓN (Búsqueda/Filtros) - RESPONSIVA */}
+                {/* Se usa flex-col/sm:flex-row para apilar en móvil y poner lado a lado en desktop. */}
+                {/* ********************************************** */}
+                <div className="px-6 py-4 flex flex-col sm:flex-row sm:items-center gap-4 border-b border-border">
+                    
+                    {/* Buscador: w-full en móvil, max-w-sm en sm+ */}
+                    <div className="relative w-full sm:max-w-sm">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                         <Input
-                        placeholder="Buscar productos por nombre..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10"
+                            placeholder="Buscar productos por nombre..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-10 w-full"
                         />
                     </div>
-                    <Button variant="outline">
-                        <Filter size={20} className="mr-2" />
-                        Filtros
-                    </Button>
-                    <Button variant="ghost">Limpiar</Button>
+                    
+                    {/* Botones de Filtro/Limpiar: Agrupados, ocupan ancho completo en móvil */}
+                    <div className="flex gap-2 w-full sm:w-auto">
+                        <Button variant="outline" className="flex-1 sm:flex-initial">
+                            <Filter size={20} className="mr-2" />
+                            Filtros
+                        </Button>
+                        <Button variant="ghost" className="flex-1 sm:flex-initial">
+                            Limpiar
+                        </Button>
+                    </div>
                 </div>
                 
                 {/* 2.2. TEXTO DE CONTEO */}
@@ -140,70 +154,118 @@ type ProductForm = {
                     Mostrando {filteredProducts.length} de {products.length} productos
                 </div>
 
-                {/* 2.3. CONTENEDOR DE LA TABLA (CORREGIDO) */}
-                {/* Se ELIMINÓ el div extra que tenía border/mx/px y que rompía el fondo: */}
-                {/* <div className="px-6 border border-gray-200 rounded-lg mx-6"> */}
+                {/* ********************************************** */}
+                {/* 2.3. CONTENEDOR DE LA TABLA (Scroll Horizontal) */}
+                {/* Se usa overflow-x-auto y min-w-[800px] para garantizar el scroll horizontal en pantallas pequeñas. */}
+                {/* ********************************************** */}
                 <div className="overflow-x-auto">
-                    <Table>
-                    <TableHeader>
-                        <TableRow>
-                        <TableHead>Nombre</TableHead>
-                        <TableHead>Categoría</TableHead>
-                        <TableHead>Marca</TableHead>
-                        <TableHead>Stock Total</TableHead>
-                        <TableHead>Estado</TableHead>
-                        <TableHead className="text-right">Acciones</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {filteredProducts.map((product) => (
-                        <TableRow key={product.id}>
-                            <TableCell>
-                            <div>
-                                <p className="font-medium">{product.nombre}</p>
-                                {/* Clase corregida para Dark Mode */}
-                                <p className="text-sm text-muted-foreground truncate">{product.descripcion}</p>
-                            </div>
-                            </TableCell>
-                            <TableCell>{product.category?.nombre || product.genero}</TableCell>
-                            <TableCell>{product.marca}</TableCell>
-                            <TableCell>
-                            {/* Clase ajustada para Dark Mode */}
-                            <span className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded text-sm">
-                                {product.stock} unidades
-                            </span>
-                            </TableCell>
-                            <TableCell>
-                            {/* Clase ajustada para Dark Mode */}
-                            <span className={`px-2 py-1 rounded text-sm ${
-                                product.estado === 'ACTIVO' 
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-                                : 'bg-gray-100 text-gray-800 dark:bg-muted dark:text-muted-foreground'
-                            }`}>
-                                {product.estado}
-                            </span>
-                            </TableCell>
-                            <TableCell className="text-right">
-                            <div className="flex justify-end gap-2">
-                                <Button variant="ghost" size="icon" onClick={() => handleEdit(product)}>
-                                <Edit size={18} />
-                                </Button>
-                                <Button variant="ghost" size="icon" onClick={() => handleDelete(product.id)}>
-                                {/* Clase corregida para Dark Mode */}
-                                <Trash2 size={18} className="text-red-600 dark:text-red-400" />
-                                </Button>
-                            </div>
-                            </TableCell>
-                        </TableRow>
-                        ))}
-                    </TableBody>
-                    </Table>
+                    <div className="inline-block min-w-full align-middle">
+                        <div className="overflow-hidden shadow ring-1 ring-border sm:rounded-lg"> 
+                            <Table className="min-w-[800px] lg:min-w-full">
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="px-4 py-3">Nombre</TableHead>
+                                        
+                                        {/* Categoría - oculto en móvil pequeño */}
+                                        <TableHead className="px-4 py-3 hidden sm:table-cell">
+                                            Categoría
+                                        </TableHead>
+                                        
+                                        {/* Marca - oculto en móvil y tablet */}
+                                        <TableHead className="px-4 py-3 hidden md:table-cell">
+                                            Marca
+                                        </TableHead>
+                                        
+                                        {/* Stock Total */}
+                                        <TableHead className="px-4 py-3 text-right">Stock Total</TableHead>
+                                        
+                                        {/* Estado - oculto en móvil pequeño */}
+                                        <TableHead className="px-4 py-3 hidden sm:table-cell">
+                                            Estado
+                                        </TableHead>
+                                        
+                                        <TableHead className="px-4 py-3 text-right">
+                                            Acciones
+                                        </TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                
+                                <TableBody>
+                                    {filteredProducts.map((product) => (
+                                        <TableRow key={product.id}>
+                                            <TableCell className="px-4 py-2">
+                                                <div>
+                                                    <p className="font-medium text-sm">{product.nombre}</p>
+                                                    <p className="text-xs text-muted-foreground truncate max-w-[150px] sm:max-w-[200px]">
+                                                        {product.descripcion}
+                                                    </p>
+                                                </div>
+                                            </TableCell>
+                                            
+                                            {/* Celdas de datos correspondientes (Ocultas en móvil) */}
+                                            <TableCell className="px-4 py-2 hidden sm:table-cell">
+                                                <span className="text-sm">
+                                                    {product.category?.nombre || product.genero}
+                                                </span>
+                                            </TableCell>
+                                            
+                                            <TableCell className="px-4 py-2 hidden md:table-cell">
+                                                <span className="text-sm">{product.marca}</span>
+                                            </TableCell>
+                                            
+                                            <TableCell className="px-4 py-2 text-right">
+                                                <span className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded text-xs sm:text-sm whitespace-nowrap">
+                                                    {product.stock} uds
+                                                </span>
+                                            </TableCell>
+                                            
+                                            <TableCell className="px-4 py-2 hidden sm:table-cell">
+                                                <span className={`px-2 py-1 rounded text-xs sm:text-sm whitespace-nowrap ${
+                                                    product.estado === 'ACTIVO' 
+                                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+                                                    : 'bg-gray-100 text-gray-800 dark:bg-muted dark:text-muted-foreground'
+                                                }`}>
+                                                    {product.estado}
+                                                </span>
+                                            </TableCell>
+                                            
+                                            <TableCell className="px-4 py-2 text-right">
+                                                {/* Botones de acción: Se reducen de tamaño en móvil con h-8 w-8 y size={16} */}
+                                                <div className="flex justify-end gap-1 sm:gap-2">
+                                                    <Button 
+                                                        variant="ghost" 
+                                                        size="icon"
+                                                        className="h-8 w-8 sm:h-10 sm:w-10"
+                                                        onClick={() => handleEdit(product)}
+                                                    >
+                                                        <Edit size={16} className="sm:w-[18px] sm:h-[18px]" />
+                                                    </Button>
+                                                    <Button 
+                                                        variant="ghost" 
+                                                        size="icon"
+                                                        className="h-8 w-8 sm:h-10 sm:w-10"
+                                                        onClick={() => handleDelete(product.id)}
+                                                    >
+                                                        <Trash2 
+                                                            size={16}
+                                                            className="text-red-600 dark:text-red-400 sm:w-[18px] sm:h-[18px]" 
+                                                        />
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {/* Modal Crear/Editar Producto (Ajustes de color para el botón de Submit) */}
+            {/* Modal Crear/Editar Producto */}
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                {/* max-w-2xl para desktop y max-h-[90vh] para que sea scrollable si el contenido es grande */}
+                <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>{editingProduct ? 'Editar' : 'Crear'} Producto</DialogTitle>
                 </DialogHeader>
@@ -211,7 +273,6 @@ type ProductForm = {
                     <div>
                     <Label>Nombre del Producto *</Label>
                     <Input placeholder="Nombre del producto" {...register('nombre')} />
-                    {/* Clase corregida para Dark Mode */}
                     {errors.nombre && <p className="text-sm text-red-600 dark:text-red-400">{errors.nombre.message}</p>}
                     </div>
 
@@ -220,7 +281,8 @@ type ProductForm = {
                     <Textarea placeholder="Descripción detallada del producto" {...register('descripcion')} />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    {/* Uso de grid para layout de 2 columnas. En móvil, grid-cols-2 es funcional, pero podría ser flex/grid-cols-1 si el formulario fuese mucho más largo. */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <Label>Género *</Label>
                         <Controller
@@ -239,23 +301,20 @@ type ProductForm = {
                             </Select>
                         )}
                         />
-                        {/* Clase corregida para Dark Mode */}
                         {errors.genero && <p className="text-sm text-red-600 dark:text-red-400">{errors.genero.message}</p>}
                     </div>
 
                     <div>
                         <Label>Marca *</Label>
                         <Input placeholder="Buscar marca..." {...register('marca')} />
-                        {/* Clase corregida para Dark Mode */}
                         {errors.marca && <p className="text-sm text-red-600 dark:text-red-400">{errors.marca.message}</p>}
                     </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                         <Label>Precio *</Label>
                         <Input type="number" step="0.01" {...register('precio', { valueAsNumber: true })} />
-                        {/* Clase corregida para Dark Mode */}
                         {errors.precio && <p className="text-sm text-red-600 dark:text-red-400">{errors.precio.message}</p>}
                     </div>
 
@@ -304,7 +363,6 @@ type ProductForm = {
                         </Select>
                         )}
                     />
-                    {/* Clase corregida para Dark Mode */}
                     {errors.categoryId && <p className="text-sm text-red-600 dark:text-red-400">{errors.categoryId.message}</p>}
                     </div>
 
@@ -314,7 +372,6 @@ type ProductForm = {
                     </Button>
                     <Button 
                         type="submit" 
-                        // Clase corregida para Dark Mode
                         className="bg-primary hover:bg-primary/90 text-primary-foreground"
                     >
                         {editingProduct ? 'Actualizar' : 'Crear'} Producto

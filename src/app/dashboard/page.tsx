@@ -25,12 +25,12 @@ export default function DashboardPage() {
 
     orders.forEach((order) => {
         order.items.forEach((item) => {
-        const prev = productSalesMap.get(item.productId) || { nombre: item.product.nombre, totalQty: 0, totalAmount: 0 };
-        productSalesMap.set(item.productId, {
-            nombre: item.product.nombre,
-            totalQty: prev.totalQty + item.quantity,
-            totalAmount: prev.totalAmount + item.price * item.quantity,
-        });
+            const prev = productSalesMap.get(item.productId) || { nombre: item.product.nombre, totalQty: 0, totalAmount: 0 };
+            productSalesMap.set(item.productId, {
+                nombre: item.product.nombre,
+                totalQty: prev.totalQty + item.quantity,
+                totalAmount: prev.totalAmount + item.price * item.quantity,
+            });
         });
     });
 
@@ -41,170 +41,144 @@ export default function DashboardPage() {
 
     if (productsLoading) {
         return (
-        // Se cambió bg-white por bg-background para el soporte de Dark Mode en el fondo de carga
-        <div className="flex h-screen items-center justify-center bg-background">
-            <p className="text-lg text-gray-500">Cargando dashboard...</p>
-        </div>
+            <div className="flex h-screen items-center justify-center bg-background">
+                <p className="text-lg text-muted-foreground">Cargando dashboard...</p>
+            </div>
         );
     }
 
     return (
-        // Se cambió bg-white por bg-background para el soporte de Dark Mode en el fondo de la página
         <div className="min-h-screen bg-background">
-        {/* Contenido principal - márgenes laterales más amplios y centrado perfecto */}
-        <div className="mx-auto max-w-screen-xl px-24 pt-4 pb-20">
+            {/* Responsive padding - más estrecho en móvil */}
+            <div className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-12 xl:px-24 pt-4 pb-12 sm:pb-20">
 
-            {/* Grid de 3 columnas con separación perfecta */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Grid responsive: 1 columna móvil, 2 tablet, 3 desktop */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
 
-            {/* ==================== INVENTARIO DE PRODUCTOS ==================== */}
-            {/* Se eliminó bg-white y border-gray-200. Card usa bg-card y border-border por defecto */}
-            <Card className="rounded-2xl shadow-sm overflow-hidden">
-                {/* Se eliminó border-gray-200. CardHeader usa border-border por defecto en su borde inferior */}
-                <CardHeader className="border-b px-6 py-5">
-                <div className="flex items-center gap-3">
-                    {/* Se cambió text-gray-600 por text-muted-foreground */}
-                    <Package className="h-5 w-5 text-muted-foreground" />
-                    {/* Se cambió text-gray-900 por text-foreground */}
-                    <CardTitle className="text-lg font-semibold text-foreground">
-                    Inventario de Productos
-                    </CardTitle>
-                </div>
-                </CardHeader>
-
-                <CardContent className="p-6">
-                {/* Se cambió text-gray-900 por text-foreground */}
-                <div className="text-4xl font-bold text-foreground">{totalInventory}</div>
-                {/* Se cambió text-gray-600 por text-muted-foreground */}
-                <p className="text-sm text-muted-foreground mt-1">Productos en inventario</p>
-                {/* Se cambió text-gray-900 por text-foreground */}
-                <p className="text-lg font-semibold text-foreground mt-3">
-                    Valor: ${totalValue.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
-                </p>
-
-                <div className="mt-6 space-y-3">
-                    {products.slice(0, 8).map((p) => (
-                    <div key={p.id} className="flex justify-between text-sm">
-                        {/* Se cambió text-gray-700 por text-foreground */}
-                        <span className="text-foreground truncate max-w-[240px]">{p.nombre}</span>
-                        {/* Se cambió text-gray-900 por text-foreground */}
-                        <span className="font-medium text-foreground">{p.stock} uds.</span>
-                    </div>
-                    ))}
-                    {products.length > 8 && (
-                    <p className="text-xs text-gray-500 text-center pt-4">
-                        +{products.length - 8} productos más
-                    </p>
-                    )}
-                </div>
-
-                {/* Botones */}
-                {/* Se eliminó border-gray-200. Se usará border-border por defecto */}
-                <div className="flex justify-between items-center mt-8 pt-6 border-t">
-                    {/* Se cambió bg-black y hover:bg-gray-900 por bg-primary y hover:bg-primary/90 */}
-                    <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground px-5" asChild>
-                        <Link href="/dashboard/productos">+ Añadir</Link> 
-                    </Button>
-                    {/* Se cambió text-gray-600 y hover:text-gray-900 por text-muted-foreground y hover:text-foreground */}
-                    <Button size="sm" variant="ghost" className="text-muted-foreground hover:text-foreground" asChild>
-                        <Link href="/dashboard/productos">... Ver todos</Link>
-                    </Button>
-                </div>
-                </CardContent>
-            </Card>
-
-            {/* ==================== VENTAS RECIENTES ==================== */}
-            {/* Se eliminó bg-white y border-gray-200. Card usa bg-card y border-border por defecto */}
-            <Card className="rounded-2xl shadow-sm overflow-hidden">
-                {/* Se eliminó border-gray-200. CardHeader usa border-border por defecto en su borde inferior */}
-                <CardHeader className="border-b px-6 py-5">
-                <div className="flex items-center gap-3">
-                    {/* Se cambió text-gray-600 por text-muted-foreground */}
-                    <DollarSign className="h-5 w-5 text-muted-foreground" />
-                    {/* Se cambió text-gray-900 por text-foreground */}
-                    <CardTitle className="text-lg font-semibold text-foreground">
-                    Ventas Recientes
-                    </CardTitle>
-                </div>
-                </CardHeader>
-
-                <CardContent className="p-6">
-                {recentSales.length === 0 ? (
-                    <p className="text-center text-sm text-gray-500 py-16">
-                    No hay ventas recientes
-                    </p>
-                ) : (
-                    <div className="space-y-3">
-                        {recentSales.map((sale) => (
-                            <div
-                            key={sale.id}
-                            // Se cambiaron clases de color fijo a clases de tema
-                            className="bg-card border border-border rounded-xl p-4 flex justify-between items-center shadow" 
-                            >
-                                {/* ... Contenido de la izquierda (múltiples líneas) ... */}
-                                <div>
-                                    {/* Se cambió text-gray-900 por text-foreground */}
-                                    <p className="font-semibold text-sm text-foreground">{sale.user.nombre}</p>
-                                    <p className="text-xs text-gray-500 mt-0.5">
-                                    Order #{sale.id.slice(0, 8)} · {format(new Date(sale.createdAt), 'dd MMM yyyy HH:mm', { locale: es })}
-                                    </p>
-                                    <p className="text-xs text-gray-500 mt-0.5">Status: SHIPPED</p>
-                                </div>
-                                {/* ... Monto de la derecha (una sola línea) ... */}
-                                {/* Se cambió text-green-600 por color custom si existe o green-400 para Dark Mode */}
-                                <p className="text-sm font-bold text-green-500">
-                                    ${sale.total.toFixed(2)}
-                                </p>
+                    {/* ==================== INVENTARIO DE PRODUCTOS ==================== */}
+                    <Card className="rounded-2xl shadow-sm overflow-hidden">
+                        <CardHeader className="border-b px-4 sm:px-6 py-4 sm:py-5">
+                            <div className="flex items-center gap-3">
+                                <Package className="h-5 w-5 text-muted-foreground" />
+                                <CardTitle className="text-base sm:text-lg font-semibold text-foreground">
+                                    Inventario de Productos
+                                </CardTitle>
                             </div>
-                        ))}
-                    </div>
-                )}
-                </CardContent>
-            </Card>
+                        </CardHeader>
 
-            {/* ==================== PRODUCTOS MÁS VENDIDOS ==================== */}
-            {/* Se eliminó bg-white y border-gray-200. Card usa bg-card y border-border por defecto */}
-            <Card className="rounded-2xl shadow-sm overflow-hidden">
-                {/* Se eliminó border-gray-200. CardHeader usa border-border por defecto en su borde inferior */}
-                <CardHeader className="border-b px-6 py-5">
-                <div className="flex items-center gap-3">
-                    {/* Se cambió text-gray-600 por text-muted-foreground */}
-                    <TrendingUp className="h-5 w-5 text-muted-foreground" />
-                    {/* Se cambió text-gray-900 por text-foreground */}
-                    <CardTitle className="text-lg font-semibold text-foreground">
-                    Productos Más Vendidos
-                    </CardTitle>
-                </div>
-                </CardHeader>
-
-                <CardContent className="p-6">
-                {topProducts.length === 0 ? (
-                    <p className="text-center text-sm text-gray-500 py-16">
-                    No hay productos top para mostrar.
-                    </p>
-                ) : (
-                    <div className="space-y-4">
-                    {topProducts.map((item) => (
-                        <div key={item.id} className="flex items-center justify-between">
-                        {/* Se cambió text-gray-700 por text-muted-foreground */}
-                        <p className="text-sm font-medium text-muted-foreground truncate max-w-[210px]">
-                            {item.nombre}
-                        </p>
-                        <div className="text-right">
-                            {/* Se cambió text-gray-900 por text-foreground */}
-                            <p className="text-lg font-bold text-foreground">
-                            ${item.totalAmount.toFixed(2)}
+                        <CardContent className="p-4 sm:p-6">
+                            <div className="text-3xl sm:text-4xl font-bold text-foreground">{totalInventory}</div>
+                            <p className="text-sm text-muted-foreground mt-1">Productos en inventario</p>
+                            <p className="text-base sm:text-lg font-semibold text-foreground mt-3">
+                                Valor: ${totalValue.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
                             </p>
-                            <p className="text-xs text-gray-500">{item.totalQty} vendidos</p>
-                        </div>
-                        </div>
-                    ))}
-                    </div>
-                )}
-                </CardContent>
-            </Card>
+
+                            {/* Lista de productos - scroll en móvil si es muy larga */}
+                            <div className="mt-4 sm:mt-6 space-y-2 sm:space-y-3 max-h-64 sm:max-h-none overflow-y-auto">
+                                {products.slice(0, 8).map((p) => (
+                                    <div key={p.id} className="flex justify-between text-sm gap-2">
+                                        <span className="text-foreground truncate flex-1">{p.nombre}</span>
+                                        <span className="font-medium text-foreground whitespace-nowrap">{p.stock} uds.</span>
+                                    </div>
+                                ))}
+                                {products.length > 8 && (
+                                    <p className="text-xs text-muted-foreground text-center pt-4">
+                                        +{products.length - 8} productos más
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Botones responsivos */}
+                            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 sm:gap-0 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t">
+                                <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground px-5 w-full sm:w-auto" asChild>
+                                    <Link href="/dashboard/productos">+ Añadir</Link> 
+                                </Button>
+                                <Button size="sm" variant="ghost" className="text-muted-foreground hover:text-foreground w-full sm:w-auto" asChild>
+                                    <Link href="/dashboard/productos">... Ver todos</Link>
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* ==================== VENTAS RECIENTES ==================== */}
+                    <Card className="rounded-2xl shadow-sm overflow-hidden">
+                        <CardHeader className="border-b px-4 sm:px-6 py-4 sm:py-5">
+                            <div className="flex items-center gap-3">
+                                <DollarSign className="h-5 w-5 text-muted-foreground" />
+                                <CardTitle className="text-base sm:text-lg font-semibold text-foreground">
+                                    Ventas Recientes
+                                </CardTitle>
+                            </div>
+                        </CardHeader>
+
+                        <CardContent className="p-4 sm:p-6">
+                            {recentSales.length === 0 ? (
+                                <p className="text-center text-sm text-muted-foreground py-12 sm:py-16">
+                                    No hay ventas recientes
+                                </p>
+                            ) : (
+                                <div className="space-y-2 sm:space-y-3">
+                                    {recentSales.map((sale) => (
+                                        <div
+                                            key={sale.id}
+                                            className="bg-card border border-border rounded-xl p-3 sm:p-4 flex justify-between items-center shadow gap-2"
+                                        >
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-semibold text-sm text-foreground truncate">{sale.user.nombre}</p>
+                                                <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                                                    Order #{sale.id.slice(0, 8)}
+                                                </p>
+                                                <p className="text-xs text-muted-foreground mt-0.5">
+                                                    {format(new Date(sale.createdAt), 'dd MMM yyyy', { locale: es })}
+                                                </p>
+                                            </div>
+                                            <p className="text-sm font-bold text-green-500 whitespace-nowrap">
+                                                ${sale.total.toFixed(2)}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    {/* ==================== PRODUCTOS MÁS VENDIDOS ==================== */}
+                    <Card className="rounded-2xl shadow-sm overflow-hidden md:col-span-2 lg:col-span-1">
+                        <CardHeader className="border-b px-4 sm:px-6 py-4 sm:py-5">
+                            <div className="flex items-center gap-3">
+                                <TrendingUp className="h-5 w-5 text-muted-foreground" />
+                                <CardTitle className="text-base sm:text-lg font-semibold text-foreground">
+                                    Productos Más Vendidos
+                                </CardTitle>
+                            </div>
+                        </CardHeader>
+
+                        <CardContent className="p-4 sm:p-6">
+                            {topProducts.length === 0 ? (
+                                <p className="text-center text-sm text-muted-foreground py-12 sm:py-16">
+                                    No hay productos top para mostrar.
+                                </p>
+                            ) : (
+                                <div className="space-y-3 sm:space-y-4">
+                                    {topProducts.map((item) => (
+                                        <div key={item.id} className="flex items-center justify-between gap-3">
+                                            <p className="text-sm font-medium text-muted-foreground truncate flex-1">
+                                                {item.nombre}
+                                            </p>
+                                            <div className="text-right whitespace-nowrap">
+                                                <p className="text-base sm:text-lg font-bold text-foreground">
+                                                    ${item.totalAmount.toFixed(2)}
+                                                </p>
+                                                <p className="text-xs text-muted-foreground">{item.totalQty} vendidos</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
-        </div>
         </div>
     );
 }
