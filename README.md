@@ -330,10 +330,10 @@ Esto permite escalar fácilmente agregando nuevos recursos (marcas, clientes, et
 
 ## 📱 Responsive Design
 
-- **Desktop-first**: Optimizado para administradores en escritorio
-- **Sidebar fijo**: Navegación siempre visible
-- **Tablas scrollables**: Horizontal scroll en pantallas pequeñas
-- **Formularios adaptativos**: Grid cols ajustables con Tailwind
+- **Prioridad de Visualización (Desktop-First)**: El diseño y la estructura base están optimizados para **escritorio y tabletas grandes**, asegurando la mejor experiencia para el administrador.
+- **Navegación Persistente**: La **barra lateral (Sidebar)** es **fija** en vistas de escritorio y tabletas (`lg+`), ofreciendo acceso constante a la navegación. Se adapta a un **menú colapsable o deslizable** en dispositivos móviles.
+- **Manejo de Contenido Denso (Tablas)**: Las tablas que contienen muchos datos utilizan **scroll horizontal** (`overflow-x-auto`) en pantallas pequeñas para evitar el desbordamiento del *layout*.
+- **Diseño de Formularios Flexible (Grid Adaptativo)**: Los formularios usan **clases de utilidades de Tailwind** para implementar un sistema de **Grid Columnas (por ejemplo, `grid-cols-1 sm:grid-cols-2`)** que se ajusta automáticamente al tamaño de la pantalla, apilando los campos en móvil para una mejor usabilidad.
 
 ---
 

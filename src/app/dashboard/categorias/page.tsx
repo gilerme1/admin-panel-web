@@ -7,11 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Eye, Edit, Trash2, Search } from 'lucide-react';
+import { Plus, Eye, Edit, Search } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { categorySchema } from '@/lib/validators';
 import { Category } from '@/lib/types';
+import DeleteConfirmation from '@/components/ui/DeleteConfirmation';
+import { toast } from 'sonner';
 
 type CategoryForm = {
     nombre: string;
@@ -29,16 +31,24 @@ export default function CategoriasPage() {
 
     const onSubmit = async (data: CategoryForm) => {
         try {
-        if (editingCategory) {
-            await updateCategory.mutateAsync({ id: editingCategory.id, dto: data });
-        } else {
-            await createCategory.mutateAsync(data);
-        }
-        setOpen(false);
-        reset();
-        setEditingCategory(null);
+            if (editingCategory) {
+                await updateCategory.mutateAsync({ id: editingCategory.id, dto: data });
+                toast.success('Categoría actualizada', {
+                    description: `${data.nombre} se guardó correctamente.`,
+                });
+            } else {
+                await createCategory.mutateAsync(data);
+                toast.success('Categoría creada', {
+                    description: `${data.nombre} se agregó al catálogo.`,
+                });
+            }
+            setOpen(false);
+            reset();
+            setEditingCategory(null);
         } catch (error: any) {
-        alert(error.response?.data?.message || 'Error al guardar categoría');
+            toast.error('Error al guardar categoría', {
+                description: error.response?.data?.message || 'Inténtalo nuevamente',
+            });
         }
     };
 
@@ -49,12 +59,13 @@ export default function CategoriasPage() {
     };
 
     const handleDelete = async (id: string) => {
-        if (confirm('¿Estás seguro de eliminar esta categoría?')) {
         try {
             await deleteCategory.mutateAsync(id);
+            toast.success('Categoría eliminada');
         } catch (error: any) {
-            alert(error.response?.data?.message || 'Error al eliminar categoría');
-        }
+            toast.error('Error al eliminar categoría', {
+                description: error.response?.data?.message || 'No se pudo eliminar',
+            });
         }
     };
 
@@ -73,16 +84,16 @@ export default function CategoriasPage() {
                     <h1 className="text-3xl font-bold text-foreground">Categorías</h1>
                 </div>
                 <Button
-                onClick={() => {
-                    setEditingCategory(null);
-                    reset({ nombre: '' });
-                    setOpen(true);
-                }}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                    onClick={() => {
+                        setEditingCategory(null);
+                        reset({ nombre: '' });
+                        setOpen(true);
+                    }}
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
-                <Plus size={20} className="mr-2" />
-                <span className="hidden sm:inline">Nueva Categoría</span>
-                <span className="sm:hidden">Nueva</span>
+                    <Plus size={20} className="mr-2" />
+                    <span className="hidden sm:inline">Nueva Categoría</span>
+                    <span className="sm:hidden">Nueva</span>
                 </Button>
             </div>
 
@@ -94,10 +105,10 @@ export default function CategoriasPage() {
                     <div className="relative max-w-sm">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                         <Input
-                        placeholder="Buscar por nombre..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10"
+                            placeholder="Buscar por nombre..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-10"
                         />
                     </div>
                 </div>
@@ -117,95 +128,94 @@ export default function CategoriasPage() {
                         </TableHeader>
                         <TableBody>
                             {filteredCategories.map((category, index) => (
-                            <TableRow key={category.id}>
-                                <TableCell>{index}</TableCell>
-                                <TableCell className="font-medium">{category.nombre}</TableCell>
-                                {/* ⚠️ MEJORA 2: Ocultar celdas de datos correspondientes en móvil */}
-                                <TableCell className="text-muted-foreground hidden md:table-cell">
-                                    {category._count?.products || 0} subcategorías
-                                </TableCell>
-                                <TableCell className="hidden md:table-cell">
-                                <span className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded text-xs">
-                                    Principal
-                                </span>
-                                </TableCell>
-                                <TableCell className="text-right">
-                                <div className="flex justify-end gap-2">
-                                    <Button variant="ghost" size="icon">
-                                        <Eye size={18} />
-                                    </Button>
-                                    <Button variant="ghost" size="icon" onClick={() => handleEdit(category)}>
-                                        <Edit size={18} />
-                                    </Button>
-                                    <Button variant="ghost" size="icon" onClick={() => handleDelete(category.id)}>
-                                        <Trash2 size={18} className="text-red-600 dark:text-red-400" /> 
-                                    </Button>
-                                </div>
-                                </TableCell>
-                            </TableRow>
+                                <TableRow key={category.id}>
+                                    <TableCell>{index}</TableCell>
+                                    <TableCell className="font-medium">{category.nombre}</TableCell>
+                                    {/* ⚠️ MEJORA 2: Ocultar celdas de datos correspondientes en móvil */}
+                                    <TableCell className="text-muted-foreground hidden md:table-cell">
+                                        {category._count?.products || 0} subcategorías
+                                    </TableCell>
+                                    <TableCell className="hidden md:table-cell">
+                                        <span className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded text-xs">
+                                            Principal
+                                        </span>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <div className="flex justify-end gap-2">
+                                            <Button variant="ghost" size="icon">
+                                                <Eye size={18} />
+                                            </Button>
+                                            <Button variant="ghost" size="icon" onClick={() => handleEdit(category)}>
+                                                <Edit size={18} />
+                                            </Button>
+                                            {/* ← REEMPLAZO DE confirm() POR DeleteConfirmation */}
+                                            <DeleteConfirmation onConfirm={() => handleDelete(category.id)} />
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
                             ))}
                         </TableBody>
                     </Table>
                 </div>
             </div>
 
-            {/* Modal Crear/Editar Categoría */}
+            {/* Modal Crear/Editar Categoría (SIN MODIFICAR, como pediste) */}
             <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-lg">
-                <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold">
-                        {editingCategory ? 'Editar' : 'Nueva'} Categoría
-                    </DialogTitle>
-                </DialogHeader>
-                
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                <DialogContent className="sm:max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-bold">
+                            {editingCategory ? 'Editar' : 'Nueva'} Categoría
+                        </DialogTitle>
+                    </DialogHeader>
                     
-                    {/* CAMPO 1: NOMBRE */}
-                    <div>
-                        <label htmlFor="nombre" className="text-base font-semibold block mb-1">Nombre</label>
-                        <Input
-                            id="nombre"
-                            placeholder="Nombre de la categoría"
-                            {...register('nombre')}
-                        />
-                        {errors.nombre && (
-                            <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.nombre.message}</p>
-                        )}
-                    </div>
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                        
+                        {/* CAMPO 1: NOMBRE */}
+                        <div>
+                            <label htmlFor="nombre" className="text-base font-semibold block mb-1">Nombre</label>
+                            <Input
+                                id="nombre"
+                                placeholder="Nombre de la categoría"
+                                {...register('nombre')}
+                            />
+                            {errors.nombre && (
+                                <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.nombre.message}</p>
+                            )}
+                        </div>
 
-                    {/* CAMPO 2: CATEGORÍA PADRE (MOCK) */}
-                    <div>
-                        <label htmlFor="categoriaPadre" className="text-base font-semibold block mb-1">Categoría Padre</label>
-                        <Input
-                            id="categoriaPadre"
-                            placeholder="Seleccione categoría padre"
-                            // ⚠️ NO REGISTRADO
-                            onChange={() => {}} 
-                        />
-                    </div>
+                        {/* CAMPO 2: CATEGORÍA PADRE (MOCK) */}
+                        <div>
+                            <label htmlFor="categoriaPadre" className="text-base font-semibold block mb-1">Categoría Padre</label>
+                            <Input
+                                id="categoriaPadre"
+                                placeholder="Seleccione categoría padre"
+                                // ⚠️ NO REGISTRADO
+                                onChange={() => {}} 
+                            />
+                        </div>
 
-                    {/* CAMPO 3: POSICIÓN (MOCK) */}
-                    <div>
-                        <label htmlFor="posicion" className="text-base font-semibold block mb-1">Posición</label>
-                        <Input
-                            id="posicion"
-                            placeholder="Elija la posición"
-                            type="number" // Se ve mejor como numérico
-                            // ⚠️ NO REGISTRADO
-                            onChange={() => {}} 
-                        />
-                    </div>
+                        {/* CAMPO 3: POSICIÓN (MOCK) */}
+                        <div>
+                            <label htmlFor="posicion" className="text-base font-semibold block mb-1">Posición</label>
+                            <Input
+                                id="posicion"
+                                placeholder="Elija la posición"
+                                type="number" // Se ve mejor como numérico
+                                // ⚠️ NO REGISTRADO
+                                onChange={() => {}} 
+                            />
+                        </div>
 
-                    <DialogFooter className="pt-4">
-                        <Button 
-                            type="submit" 
-                            className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                        >
-                            {editingCategory ? 'Guardar' : 'Crear'}
-                        </Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
+                        <DialogFooter className="pt-4">
+                            <Button 
+                                type="submit" 
+                                className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                            >
+                                {editingCategory ? 'Guardar' : 'Crear'}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
             </Dialog>
         </div>
     );
