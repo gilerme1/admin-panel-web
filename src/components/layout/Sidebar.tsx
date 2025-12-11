@@ -20,8 +20,6 @@ import {
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
-// ... (menuItems se mantiene igual)
-
 const menuItems = [
     { href: '/dashboard', icon: Home, label: 'Inicio' },
     { href: '/dashboard/ventas', icon: ShoppingCart, label: 'Ventas' },
@@ -98,7 +96,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             {/* Mobile Sidebar - Drawer */}
             <aside 
                 className={cn(
-                    // ✅ Ajuste: Se usa 'block lg:hidden' para que solo aparezca en móvil
                     "block lg:hidden fixed left-0 top-0 z-50 w-64 h-screen bg-card border-r border-border transition-transform duration-300 ease-in-out",
                     isOpen ? "translate-x-0" : "-translate-x-full"
                 )}
@@ -135,7 +132,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                onClick={onClose} // Cerrar sidebar al hacer clic
+                                onClick={onClose} 
                                 className={cn(
                                     'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors',
                                     isActive

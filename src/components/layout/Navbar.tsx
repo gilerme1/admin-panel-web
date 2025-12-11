@@ -1,7 +1,7 @@
 // components/layout/Navbar.tsx
 'use client';
 
-import { Bell, Sun, Moon, LogOut, Menu } from 'lucide-react'; // ⬅️ Se agrega Menu
+import { Bell, Sun, Moon, LogOut, Menu } from 'lucide-react'; 
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -19,9 +19,6 @@ export default function Navbar({ onOpenSidebar }: NavbarProps) {
     const { user, logout } = useAuth();
     const { theme, toggleTheme } = useTheme(); 
     const pathname = usePathname();
-
-    // ... (generateBreadcrumb se mantiene igual)
-
     const generateBreadcrumb = () => {
         const segments = pathname.split('/').filter(Boolean);
 
@@ -64,17 +61,15 @@ export default function Navbar({ onOpenSidebar }: NavbarProps) {
     const breadcrumbs = generateBreadcrumb();
 
     return (
-        // ✅ Ajuste: 'left-64' se reemplaza por 'lg:left-64' para que en móvil sea 'left-0'
         <header className="h-16 bg-background border-b border-border fixed top-0 right-0 left-0 lg:left-64 z-50"> 
         <div className="h-full px-6 flex items-center justify-between">
 
-            {/* ⬅️ NUEVO: Botón para abrir el Sidebar en móvil */}
             <div className='flex items-center gap-4'>
                 <Button 
                     variant="ghost" 
                     size="icon" 
                     className='lg:hidden'
-                    onClick={onOpenSidebar} // ⬅️ Llama a la función del layout
+                    onClick={onOpenSidebar} 
                 >
                     <Menu className="h-5 w-5" />
                 </Button>

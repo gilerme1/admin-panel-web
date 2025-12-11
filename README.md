@@ -38,12 +38,6 @@ Panel administrativo moderno para gestión de inventario de e-commerce, construi
 
 ---
 
-## 🎥 Demo
-
-[Incluir capturas de pantalla o link a deploy]
-
----
-
 ## 🛠️ Tecnologías
 
 | Tecnología | Propósito |
@@ -83,13 +77,15 @@ npm install tailwind-merge date-fns
 
 Crear archivo `.env.local`:
 
-```env
-NEXT_PUBLIC_API_URL=http://localhost:3000/api
+```
+.env
+NEXT_PUBLIC_API_URL=NEXT_PUBLIC_API_URL=https://admin-api-8vsq.onrender.com/api
+
 ```
 
 ### **2. Verificar Backend**
 
-Asegurarse de que el backend esté corriendo en `http://localhost:3000`
+Asegurarse de que el backend esté corriendo en `https://admin-api-8vsq.onrender.com/api`
 
 ---
 
@@ -157,121 +153,9 @@ lib/
 
 ---
 
-## 🪝 Hooks Personalizados
-
-### **useAuth**
-Maneja autenticación JWT con refresh automático:
-
-```tsx
-const { user, login, logout, isAuthenticated } = useAuth();
-
-// Login
-await login.mutateAsync({ email, password });
-
-// Logout
-logout();
 ```
 
-### **useCategories**
-CRUD completo de categorías:
-
-```tsx
-const { 
-  categories, 
-  createCategory, 
-  updateCategory, 
-  deleteCategory 
-} = useCategories();
-
-// Crear
-await createCategory.mutateAsync({ nombre: 'Zapatillas' });
-
-// Editar
-await updateCategory.mutateAsync({ 
-  id: 'uuid', 
-  dto: { nombre: 'Zapatillas Deportivas' } 
-});
 ```
-
-### **useProducts**
-CRUD de productos con filtros opcionales:
-
-```tsx
-const { products, createProduct } = useProducts({
-  genero: 'HOMBRE',
-  marca: 'Nike',
-  minPrecio: 100,
-  maxPrecio: 500
-});
-```
-
-### **useSales**
-Gestión de ventas con carrito:
-
-```tsx
-const { orders, users, createSale } = useSales();
-
-await createSale.mutateAsync({
-  userId: 'uuid-usuario',
-  items: [
-    { productId: 'uuid-producto', quantity: 2, price: 1499.99 }
-  ]
-});
-```
-
----
-
-## 🧩 Componentes Reutilizables
-
-### **Principios de Diseño**
-
-1. **Composición sobre configuración**: Componentes pequeños y combinables
-2. **Accesibilidad first**: Radix UI maneja ARIA, keyboard navigation
-3. **Type-safe**: Props completamente tipadas con TypeScript
-4. **Estilización flexible**: `className` prop para personalización
-
-### **Ejemplo: Dialog Modal Reutilizable**
-
-```tsx
-<Dialog open={open} onOpenChange={setOpen}>
-  <DialogContent>
-    <DialogHeader>
-      <DialogTitle>Nueva Categoría</DialogTitle>
-    </DialogHeader>
-    
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Input {...register('nombre')} />
-      <Button type="submit">Crear</Button>
-    </form>
-  </DialogContent>
-</Dialog>
-```
-
-### **Tabla con Paginación y Ordenamiento**
-
-```tsx
-<Table>
-  <TableHeader>
-    <TableRow>
-      <TableHead 
-        className="cursor-pointer" 
-        onClick={() => toggleSort('nombre')}
-      >
-        Cliente {sortBy === 'nombre' && '↕'}
-      </TableHead>
-    </TableRow>
-  </TableHeader>
-  <TableBody>
-    {filteredData.map(item => (
-      <TableRow key={item.id}>
-        <TableCell>{item.nombre}</TableCell>
-      </TableRow>
-    ))}
-  </TableBody>
-</Table>
-```
-
----
 
 ## 💡 Decisiones de Diseño
 
@@ -281,14 +165,6 @@ await createSale.mutateAsync({
 - **Estados de loading/error**: Manejo centralizado de estados async
 - **Optimistic updates**: UI responsive sin esperar servidor
 
-```tsx
-const createCategory = useMutation({
-  mutationFn: async (dto) => api.post('/categories', dto),
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['categories'] });
-  }
-});
-```
 
 ### **¿Por qué React Hook Form + Zod?**
 - **Performance**: Solo re-renderiza campos modificados
@@ -319,15 +195,6 @@ Esto permite escalar fácilmente agregando nuevos recursos (marcas, clientes, et
 
 ---
 
-## 🔒 Seguridad
-
-- **JWT en localStorage**: Token manejado en interceptor Axios
-- **Redirección automática**: Si 401, redirect a `/login`
-- **Validación client-side**: Zod previene envío de datos inválidos
-- **CORS configurado**: Backend acepta requests del frontend
-
----
-
 ## 📱 Responsive Design
 
 - **Prioridad de Visualización (Desktop-First)**: El diseño y la estructura base están optimizados para **escritorio y tabletas grandes**, asegurando la mejor experiencia para el administrador.
@@ -339,7 +206,7 @@ Esto permite escalar fácilmente agregando nuevos recursos (marcas, clientes, et
 
 ## 🚀 Deploy
 
-### **Vercel (Recomendado)**
+### **Vercel**
 
 ```bash
 # Instalar Vercel CLI
@@ -350,37 +217,8 @@ vercel --prod
 ```
 
 Variables de entorno en Vercel:
-- `NEXT_PUBLIC_API_URL`: URL del backend en producción
+- `NEXT_PUBLIC_API_URL`: https://admin-panel-web-two.vercel.app/
 
-### **Otras Opciones**
-- Netlify
-- Railway
-- Render
 
 ---
-
-## 🧪 Testing (Opcional)
-
-```bash
-# Unit tests
-npm run test
-
-# E2E con Playwright
-npm run test:e2e
-```
-
----
-
-## 📝 Scripts Útiles
-
-```bash
-# Formatear código
-npm run format
-
-# Type-check sin build
-npx tsc --noEmit
-
-# Analizar bundle
-npm run build && npx @next/bundle-analyzer
-```
 

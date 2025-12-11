@@ -16,7 +16,7 @@ import { Trash2 } from 'lucide-react';
 
 interface DeleteConfirmationProps {
   onConfirm: () => void;
-  children?: React.ReactNode; // Para custom trigger (opcional, usamos botón por default)
+  children?: React.ReactNode; 
 }
 
 export default function DeleteConfirmation({ onConfirm, children }: DeleteConfirmationProps) {

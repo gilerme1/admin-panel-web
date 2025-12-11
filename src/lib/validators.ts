@@ -17,7 +17,6 @@ export const categorySchema = z.object({
 export const productSchema = z.object({
     nombre: z.string().min(1, 'El nombre es requerido'),
     descripcion: z.string().optional(),
-    // 💡 SOLUCIÓN: Usar invalid_type_error en lugar de errorMap
     genero: z.nativeEnum(Genero, { message: 'Género inválido' }),
     marca: z.string().min(1, 'La marca es requerida'),
     precio: z.number().min(0, 'El precio debe ser mayor o igual a 0'),

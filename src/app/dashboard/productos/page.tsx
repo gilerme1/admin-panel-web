@@ -97,10 +97,6 @@ export default function ProductosPage() {
     if (isLoading) return <div>Cargando...</div>;
 
     return (
-        // **********************************************
-        // 1. CONTENEDOR RAIZ (Aplicación de Responsividad)
-        // Se aplica padding dinámico y ancho máximo.
-        // **********************************************
         <div className="space-y-6 pt-6 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 max-w-screen-xl mx-auto">
             
             {/* 1. Encabezado y Botones de Acción */}

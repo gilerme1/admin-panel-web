@@ -1,5 +1,5 @@
 // src/app/dashboard/layout.tsx
-'use client'; // ⬅️ NECESARIO para usar useState y los hooks de Sidebar
+'use client'; 
 
 import { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
@@ -10,19 +10,12 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-    // 1. Añadir estado para controlar la visibilidad del Sidebar móvil
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const handleOpenSidebar = () => setIsSidebarOpen(true);
     const handleCloseSidebar = () => setIsSidebarOpen(false);
 
     return (
-        // **********************************************
-        // 2. CORRECCIÓN EN EL HTML: 
-        // Se añade `lg:ml-64` al contenedor principal del contenido.
-        // Se añade clase oculta `hidden lg:block` al Sidebar fijo.
-        // El Sidebar ahora usa las props `isOpen` y `onClose`.
-        // **********************************************
         <div className="flex bg-background min-h-screen">
             {/* Sidebar Desktop y Móvil (Drawer) */}
             <Sidebar 

@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import Providers from './providers';
-import { Toaster } from '@/components/ui/sonner';  // ← NUEVA IMPORTACIÓN
+import { Toaster } from '@/components/ui/sonner'; 
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -25,8 +25,8 @@ export default function RootLayout({
         <Toaster
           position="bottom-right"
           richColors          
-          closeButton         // Botón X para cerrar
-          expand              // Expande al hover mostrando descripción completa
+          closeButton         
+          expand              
           toastOptions={{
             classNames: {
               toast: 'text-base',               

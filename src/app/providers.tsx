@@ -4,7 +4,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createContext, useContext, useEffect, useState } from 'react';
 
-// ============= Theme Context =============
 type Theme = 'light' | 'dark';
 
 const ThemeContext = createContext<{
@@ -37,7 +36,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     const toggleTheme = () => setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
 
-    // Evitar flash de contenido sin estilo
     if (!mounted) {
         return <>{children}</>;
     }

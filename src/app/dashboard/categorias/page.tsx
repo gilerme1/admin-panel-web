@@ -76,9 +76,7 @@ export default function CategoriasPage() {
     if (isLoading) return <div>Cargando...</div>;
 
     return (
-        // ⚠️ MEJORA 1: Padding lateral responsivo (px-4 para móvil, subiendo hasta px-28 en desktop)
         <div className="space-y-6 pt-6 px-4 sm:px-8 md:px-12 lg:px-28">
-            {/* 1. Encabezado y Botón Nueva Categoría */}
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold text-foreground">Categorías</h1>
@@ -189,7 +187,6 @@ export default function CategoriasPage() {
                             <Input
                                 id="categoriaPadre"
                                 placeholder="Seleccione categoría padre"
-                                // ⚠️ NO REGISTRADO
                                 onChange={() => {}} 
                             />
                         </div>
@@ -200,8 +197,7 @@ export default function CategoriasPage() {
                             <Input
                                 id="posicion"
                                 placeholder="Elija la posición"
-                                type="number" // Se ve mejor como numérico
-                                // ⚠️ NO REGISTRADO
+                                type="number" 
                                 onChange={() => {}} 
                             />
                         </div>
